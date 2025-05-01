@@ -17,12 +17,12 @@ Feature: 01-GetPostDetails
     And A site exists for node name "neosdemo" and domain "http://localhost" and package Vendor.Site
 
     And the following CreateNodeAggregateWithNode commands are executed:
-      | nodeAggregateId | parentNodeAggregateId | nodeTypeName                   | initialPropertyValues                                                                                                                                                           | originDimensionSpacePoint | nodeName |
-      | homepage        | sites                 | Neos.Demo:Document.Homepage    | {"title": "home"}                                                                                                                                                               | {"language": "en_US"}     | neosdemo   |
-      | some-page       | homepage              | Neos.Demo:Document.Page        | {"title": "some page"}                                                                                                                                                          | {"language": "en_US"}     |          |
-      | blog            | homepage              | Neos.Demo:Document.Blog        | {"title": "blog", "uriPathSegment": "blog"}                                                                                                                                                               | {"language": "en_US"}     |          |
+      | nodeAggregateId | parentNodeAggregateId | nodeTypeName                   | initialPropertyValues                                                                                                                                                                                        | originDimensionSpacePoint | nodeName |
+      | homepage        | sites                 | Neos.Demo:Document.Homepage    | {"title": "home"}                                                                                                                                                                                            | {"language": "en_US"}     | neosdemo |
+      | some-page       | homepage              | Neos.Demo:Document.Page        | {"title": "some page"}                                                                                                                                                                                       | {"language": "en_US"}     |          |
+      | blog            | homepage              | Neos.Demo:Document.Blog        | {"title": "blog", "uriPathSegment": "blog"}                                                                                                                                                                  | {"language": "en_US"}     |          |
       | post-a          | blog                  | Neos.Demo:Document.BlogPosting | {"title": "a", "uriPathSegment": "my-post", "abstract": "<p>This is <strong>my</strong> blog post</p>", "authorName": "Marc Henry", "datePublished":{"__type": "DateTimeImmutable", "value": "2025-04-03"} } | {"language": "en_US"}     |          |
-      | post-b          | blog                  | Neos.Demo:Document.BlogPosting | {"title": "b"}                                                                                                                                                                  | {"language": "en_US"}     |          |
+      | post-b          | blog                  | Neos.Demo:Document.BlogPosting | {"title": "b"}                                                                                                                                                                                               | {"language": "en_US"}     |          |
 
     And the command CreateNodeVariant is executed with payload:
       | Key             | Value                |
@@ -54,7 +54,33 @@ Feature: 01-GetPostDetails
       | originDimensionSpacePoint | {"language": "de"}  |
       | propertyValues            | {"title": "a (de)"} |
 
-  Scenario: GetPostDetails for homepage
+  Scenario: Constraint GetPostDetails for non existing node
+    When I issue the following query to "http://127.0.0.1:8081/get-blog-details":
+      | Key  | Value                                                                                                                                                |
+      | node | "{\"contentRepositoryId\":\"default\",\"workspaceName\":\"live\",\"dimensionSpacePoint\":{\"language\":\"en_US\"},\"aggregateId\":\"not-existing\"}" |
+    Then I expect the following query response:
+      """json
+      {
+          "error": {
+              "message": "Node address {\"contentRepositoryId\":\"default\",\"workspaceName\":\"live\",\"dimensionSpacePoint\":{\"language\":\"en_US\"},\"aggregateId\":\"not-existing\"} does not exist in subgraph."
+          }
+      }
+      """
+
+  Scenario: Constraint GetPostDetails for not a blog posting
+    When I issue the following query to "http://127.0.0.1:8081/get-blog-details":
+      | Key  | Value                                                                                                                                            |
+      | node | "{\"contentRepositoryId\":\"default\",\"workspaceName\":\"live\",\"dimensionSpacePoint\":{\"language\":\"en_US\"},\"aggregateId\":\"homepage\"}" |
+    Then I expect the following query response:
+      """json
+      {
+          "error": {
+              "message": "Node {\"contentRepositoryId\":\"default\",\"workspaceName\":\"live\",\"dimensionSpacePoint\":{\"language\":\"en_US\"},\"aggregateId\":\"homepage\"} is not a blog posting."
+          }
+      }
+      """
+
+  Scenario: GetPostDetails for post
     When I issue the following query to "http://127.0.0.1:8081/get-blog-details":
       | Key  | Value                                                                                                                                          |
       | node | "{\"contentRepositoryId\":\"default\",\"workspaceName\":\"live\",\"dimensionSpacePoint\":{\"language\":\"en_US\"},\"aggregateId\":\"post-a\"}" |

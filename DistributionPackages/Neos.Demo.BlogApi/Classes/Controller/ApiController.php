@@ -56,7 +56,7 @@ final class ApiController implements ControllerInterface
         }
 
         if ($node->nodeTypeName->value !== 'Neos.Demo:Document.BlogPosting') {
-            return QueryResponse::clientError(sprintf('Node address %s does not exist in subgraph.' , $nodeAddress->toJson()));
+            return QueryResponse::clientError(sprintf('Node %s is not a blog posting.' , $nodeAddress->toJson()));
         }
 
         $nodeUriBuilder = $this->nodeUriBuilderFactory->forActionRequest($request);
