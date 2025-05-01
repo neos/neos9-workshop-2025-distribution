@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Neos\Demo\BlogApi\Controller;
 
-use GuzzleHttp\Psr7\Response;
+use Neos\ContentRepository\Core\DimensionSpace\DimensionSpacePoint;
 use Neos\ContentRepository\Core\Feature\Security\Exception\AccessDenied;
+use Neos\ContentRepository\Core\Projection\ContentGraph\Filter\FindChildNodesFilter;
 use Neos\ContentRepository\Core\SharedModel\Exception\WorkspaceDoesNotExist;
 use Neos\ContentRepository\Core\SharedModel\Node\NodeAddress;
+use Neos\ContentRepository\Core\SharedModel\Node\NodeAggregateId;
+use Neos\ContentRepository\Core\SharedModel\Workspace\WorkspaceName;
 use Neos\ContentRepositoryRegistry\ContentRepositoryRegistry;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\ActionRequest;
@@ -15,6 +18,7 @@ use Neos\Flow\Mvc\Controller\ControllerInterface;
 use Neos\Flow\Mvc\Exception\NoSuchActionException;
 use Neos\Neos\FrontendRouting\NodeUriBuilderFactory;
 use Neos\Neos\FrontendRouting\Options;
+use Neos\Neos\FrontendRouting\SiteDetection\SiteDetectionResult;
 use Psr\Http\Message\ResponseInterface;
 
 final class ApiController implements ControllerInterface
@@ -25,7 +29,7 @@ final class ApiController implements ControllerInterface
     #[Flow\Inject]
     protected NodeUriBuilderFactory $nodeUriBuilderFactory;
 
-    public function getPostDetails(ActionRequest $request): QueryResponse
+    private function getPostDetails(ActionRequest $request): QueryResponse
     {
         $nodeAddressSerialized = $request->getHttpRequest()->getQueryParams()['node'] ?? null;
         if (!is_string($nodeAddressSerialized)) {
@@ -40,15 +44,9 @@ final class ApiController implements ControllerInterface
 
         $contentRepository = $this->contentRepositoryRegistry->get($nodeAddress->contentRepositoryId);
 
-        try {
-            $subgraph = $contentRepository->getContentSubgraph($nodeAddress->workspaceName, $nodeAddress->dimensionSpacePoint);
-            // manually
-            // $subgraph = $contentGraph->getSubgraph($nodeAddress->dimensionSpacePoint, NeosVisibilityConstraints::excludeRemoved()->merge(NeosVisibilityConstraints::excludeDisabled()));
-        } catch (WorkspaceDoesNotExist $workspaceDoesNotExist) {
-            return QueryResponse::clientError(sprintf('Workspace %s does not exist', $nodeAddress->workspaceName->value));
-        } catch (AccessDenied $accessDenied) {
-            return QueryResponse::clientError($accessDenied->getMessage());
-        }
+        $subgraph = $contentRepository->getContentSubgraph($nodeAddress->workspaceName, $nodeAddress->dimensionSpacePoint);
+        // manually
+        // $subgraph = $contentGraph->getSubgraph($nodeAddress->dimensionSpacePoint, NeosVisibilityConstraints::excludeRemoved()->merge(NeosVisibilityConstraints::excludeDisabled()));
 
         $node = $subgraph->findNodeById($nodeAddress->aggregateId);
         if ($node === null) {
@@ -89,6 +87,10 @@ final class ApiController implements ControllerInterface
                 'getPostDetails' => $this->getPostDetails($request)->toHttpResponse(),
                 default => throw new NoSuchActionException(sprintf('An action "%s" does not exist in controller "%s".', $request->getControllerActionName(), self::class), 1746104348)
             };
+        } catch (WorkspaceDoesNotExist $workspaceDoesNotExist) {
+            return QueryResponse::clientError($workspaceDoesNotExist)->toHttpResponse();
+        } catch (AccessDenied $accessDenied) {
+            return QueryResponse::clientError($accessDenied)->toHttpResponse();
         } catch (\Exception $e) {
             return QueryResponse::serverError($e)->toHttpResponse();
         }

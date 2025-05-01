@@ -48,26 +48,30 @@ final class QueryResponse
         );
     }
 
-    public static function clientError(string $message): self
+    public static function clientError(\Exception|string $cause): self
     {
         return new self(
             statusCode: self::STATUS_CODE_CLIENT_ERROR,
             discriminator: self::DISCRIMINATOR_ERROR,
-            payload: [
-                'message' => $message,
+            payload: is_string($cause) ? [
+                'message' => $cause,
+            ] : [
+                'type' => $cause::class,
+                'code' => $cause->getCode(),
+                'message' => $cause->getMessage(),
             ],
         );
     }
 
-    public static function serverError(\Exception $exception): self
+    public static function serverError(\Exception $cause): self
     {
         return new self(
             statusCode: self::STATUS_CODE_SERVER_ERROR,
             discriminator: self::DISCRIMINATOR_ERROR,
             payload: [
-                'type' => $exception::class,
-                'code' => $exception->getCode(),
-                'message' => $exception->getMessage(),
+                'type' => $cause::class,
+                'code' => $cause->getCode(),
+                'message' => $cause->getMessage(),
             ],
         );
     }
