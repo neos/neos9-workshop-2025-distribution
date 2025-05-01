@@ -29,6 +29,9 @@ final class ApiController implements ControllerInterface
     #[Flow\Inject]
     protected ContentRepositoryRegistry $contentRepositoryRegistry;
 
+    #[Flow\Inject]
+    protected NodeUriBuilderFactory $nodeUriBuilderFactory;
+
     private NodeUriBuilder $nodeUriBuilder;
 
     private UriBuilder $uriBuilder;
@@ -60,6 +63,8 @@ final class ApiController implements ControllerInterface
         if ($node->nodeTypeName->value !== 'Neos.Demo:Document.BlogPosting') {
             return QueryResponse::clientError(sprintf('Node %s is not a blog posting.' , $nodeAddress->toJson()));
         }
+
+        // instance of check via node type manager
 
         $uri = $this->nodeUriBuilder->uriFor(NodeAddress::fromNode($node), Options::createForceAbsolute());
 
@@ -129,7 +134,7 @@ final class ApiController implements ControllerInterface
     {
         $this->uriBuilder = new UriBuilder();
         $this->uriBuilder->setRequest($request);
-        $this->nodeUriBuilder = (new NodeUriBuilderFactory())->forActionRequest($request);
+        $this->nodeUriBuilder = $this->nodeUriBuilderFactory->forActionRequest($request);
         try {
             return match ($request->getControllerActionName()) {
                 'getPostDetails' => $this->getPostDetails($request)->toHttpResponse(),
@@ -140,6 +145,8 @@ final class ApiController implements ControllerInterface
             return QueryResponse::clientError($workspaceDoesNotExist)->toHttpResponse();
         } catch (AccessDenied $accessDenied) {
             return QueryResponse::clientError($accessDenied)->toHttpResponse();
+        } catch (\InvalidArgumentException $e) {
+            return QueryResponse::clientError($e)->toHttpResponse();
         } catch (\Exception $e) {
             return QueryResponse::serverError($e)->toHttpResponse();
         }

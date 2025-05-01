@@ -14,7 +14,7 @@ Feature: 01-GetPostDetails
       | nodeAggregateId | "sites"           |
       | nodeTypeName    | "Neos.Neos:Sites" |
 
-    And A site exists for node name "neosdemo" and domain "http://localhost" and package Vendor.Site
+    And A site exists for node name "neosdemo" and domain "http://localhost" and package Neos.Demo
 
     And the following CreateNodeAggregateWithNode commands are executed:
       | nodeAggregateId | parentNodeAggregateId | nodeTypeName                   | initialPropertyValues                                                                                                                                                                                        | originDimensionSpacePoint | nodeName |
