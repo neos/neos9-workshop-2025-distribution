@@ -25,7 +25,8 @@
         "neos/neos-ui": "~9.0.0",
         "neos/seo": "~4.1",
         "neos/demo": "~9.0.0",
-        "neos/demo-blogapi": "@dev"
+        "neos/demo-blogapi": "@dev",
+        "neos/demo-blogimporter": "@dev"
     },
     "require-dev": {
         "neos/behat": "~9.0.0",
