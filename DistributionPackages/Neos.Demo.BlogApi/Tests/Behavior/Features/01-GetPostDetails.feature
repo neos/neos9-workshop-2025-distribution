@@ -1,3 +1,4 @@
+@flowEntities
 Feature: 01-GetPostDetails
 
   Background:
@@ -13,12 +14,14 @@ Feature: 01-GetPostDetails
       | nodeAggregateId | "sites"           |
       | nodeTypeName    | "Neos.Neos:Sites" |
 
+    And A site exists for node name "neosdemo" and domain "http://localhost" and package Vendor.Site
+
     And the following CreateNodeAggregateWithNode commands are executed:
       | nodeAggregateId | parentNodeAggregateId | nodeTypeName                   | initialPropertyValues                                                                                                                                                           | originDimensionSpacePoint | nodeName |
-      | homepage        | sites                 | Neos.Demo:Document.Homepage    | {"title": "home"}                                                                                                                                                               | {"language": "en_US"}     | site-a   |
+      | homepage        | sites                 | Neos.Demo:Document.Homepage    | {"title": "home"}                                                                                                                                                               | {"language": "en_US"}     | neosdemo   |
       | some-page       | homepage              | Neos.Demo:Document.Page        | {"title": "some page"}                                                                                                                                                          | {"language": "en_US"}     |          |
-      | blog            | homepage              | Neos.Demo:Document.Blog        | {"title": "blog"}                                                                                                                                                               | {"language": "en_US"}     |          |
-      | post-a          | blog                  | Neos.Demo:Document.BlogPosting | {"title": "a", "abstract": "<p>This is <strong>my</strong> blog post</p>", "authorName": "Marc Henry", "datePublished":{"__type": "DateTimeImmutable", "value": "2025-04-03"} } | {"language": "en_US"}     |          |
+      | blog            | homepage              | Neos.Demo:Document.Blog        | {"title": "blog", "uriPathSegment": "blog"}                                                                                                                                                               | {"language": "en_US"}     |          |
+      | post-a          | blog                  | Neos.Demo:Document.BlogPosting | {"title": "a", "uriPathSegment": "my-post", "abstract": "<p>This is <strong>my</strong> blog post</p>", "authorName": "Marc Henry", "datePublished":{"__type": "DateTimeImmutable", "value": "2025-04-03"} } | {"language": "en_US"}     |          |
       | post-b          | blog                  | Neos.Demo:Document.BlogPosting | {"title": "b"}                                                                                                                                                                  | {"language": "en_US"}     |          |
 
     And the command CreateNodeVariant is executed with payload:
@@ -62,7 +65,8 @@ Feature: 01-GetPostDetails
               "title": "a",
               "abstract": "This is my blog post",
               "authorName": "Marc Henry",
-              "datePublished": "2025-04-03T00:00:00+00:00"
+              "datePublished": "2025-04-03T00:00:00+00:00",
+              "uri": "http://127.0.0.1:8081/en/blog/my-post.html"
           }
       }
       """

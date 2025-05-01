@@ -13,6 +13,7 @@ class FeatureContext implements BehatContext
     use CRTestSuiteTrait;
     use CRRegistrySubjectProvider;
     use BlogApiTrait;
+    use NeosSiteTrait;
 
     public function __construct()
     {

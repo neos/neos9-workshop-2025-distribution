@@ -13,12 +13,17 @@ use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\ActionRequest;
 use Neos\Flow\Mvc\Controller\ControllerInterface;
 use Neos\Flow\Mvc\Exception\NoSuchActionException;
+use Neos\Neos\FrontendRouting\NodeUriBuilderFactory;
+use Neos\Neos\FrontendRouting\Options;
 use Psr\Http\Message\ResponseInterface;
 
 final class ApiController implements ControllerInterface
 {
     #[Flow\Inject]
     protected ContentRepositoryRegistry $contentRepositoryRegistry;
+
+    #[Flow\Inject]
+    protected NodeUriBuilderFactory $nodeUriBuilderFactory;
 
     public function getPostDetails(ActionRequest $request): ResponseInterface
     {
@@ -79,6 +84,9 @@ final class ApiController implements ControllerInterface
             );
         }
 
+        $nodeUriBuilder = $this->nodeUriBuilderFactory->forActionRequest($request);
+        $uri = $nodeUriBuilder->uriFor(NodeAddress::fromNode($node), Options::createForceAbsolute());
+
         $title = $node->getProperty('title');
         $abstract = $node->getProperty('abstract');
         if ($abstract) {
@@ -98,6 +106,7 @@ final class ApiController implements ControllerInterface
                     'abstract' => $abstract,
                     'datePublished' => $datePublished,
                     'authorName' => $authorName,
+                    'uri' => $uri,
                 ]
             ])
         );
