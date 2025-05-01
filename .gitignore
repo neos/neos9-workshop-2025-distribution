@@ -1,1 +1,15 @@
+/Build/Behat/*
+/Build/PhpCodesniffer/*
+/Build/BuildEssentials
+/Build/Reports
+/Build/Resources
+/Configuration/
+/Data/
+/Packages/
+/Web/
+/bin/
+/Readme.rst
+/Upgrading.rst
+/flow
+/flow.bat
 .idea
