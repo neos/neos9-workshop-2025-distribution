@@ -25,63 +25,38 @@ final class ApiController implements ControllerInterface
     #[Flow\Inject]
     protected NodeUriBuilderFactory $nodeUriBuilderFactory;
 
-    public function getPostDetails(ActionRequest $request): ResponseInterface
+    public function getPostDetails(ActionRequest $request): QueryResponse
     {
         $nodeAddressSerialized = $request->getHttpRequest()->getQueryParams()['node'] ?? null;
         if (!is_string($nodeAddressSerialized)) {
-            return new Response(
-                status: 400,
-                body: json_encode([
-                    'error' => [
-                        'message' => 'No node address specified'
-                    ]
-                ])
-            );
+            return QueryResponse::clientError('No node address specified');
         }
 
         try {
             $nodeAddress = NodeAddress::fromJsonString($nodeAddressSerialized);
         } catch (\InvalidArgumentException $e) {
-            return new Response(
-                status: 400,
-                body: json_encode([
-                    'error' => [
-                        'message' => sprintf('Not a valid node address: %s' , $e->getMessage())
-                    ]
-                ])
-            );
+            return QueryResponse::clientError(sprintf('Not a valid node address: %s' , $e->getMessage()));
         }
 
         $contentRepository = $this->contentRepositoryRegistry->get($nodeAddress->contentRepositoryId);
-        // $contentGraph->getSubgraph($nodeAddress->dimensionSpacePoint, NeosVisibilityConstraints::excludeRemoved()->merge(NeosVisibilityConstraints::excludeDisabled()));
 
         try {
             $subgraph = $contentRepository->getContentSubgraph($nodeAddress->workspaceName, $nodeAddress->dimensionSpacePoint);
+            // manually
+            // $subgraph = $contentGraph->getSubgraph($nodeAddress->dimensionSpacePoint, NeosVisibilityConstraints::excludeRemoved()->merge(NeosVisibilityConstraints::excludeDisabled()));
         } catch (WorkspaceDoesNotExist $workspaceDoesNotExist) {
+            return QueryResponse::clientError(sprintf('Workspace %s does not exist', $nodeAddress->workspaceName->value));
         } catch (AccessDenied $accessDenied) {
+            return QueryResponse::clientError($accessDenied->getMessage());
         }
 
         $node = $subgraph->findNodeById($nodeAddress->aggregateId);
         if ($node === null) {
-            return new Response(
-                status: 400,
-                body: json_encode([
-                    'error' => [
-                        'message' => sprintf('Node address %s does not exist in subgraph.' , $nodeAddress->toJson())
-                    ]
-                ])
-            );
+            return QueryResponse::clientError(sprintf('Node address %s does not exist in subgraph.' , $nodeAddress->toJson()));
         }
 
         if ($node->nodeTypeName->value !== 'Neos.Demo:Document.BlogPosting') {
-            return new Response(
-                status: 400,
-                body: json_encode([
-                    'error' => [
-                        'message' => sprintf('Node %s is not a blog posting.' , $nodeAddress->toJson())
-                    ]
-                ])
-            );
+            return QueryResponse::clientError(sprintf('Node address %s does not exist in subgraph.' , $nodeAddress->toJson()));
         }
 
         $nodeUriBuilder = $this->nodeUriBuilderFactory->forActionRequest($request);
@@ -98,25 +73,24 @@ final class ApiController implements ControllerInterface
         }
         $authorName = $node->getProperty('authorName');
 
-        return new Response(
-            status: 200,
-            body: json_encode([
-                'success' => [
-                    'title' => $title,
-                    'abstract' => $abstract,
-                    'datePublished' => $datePublished,
-                    'authorName' => $authorName,
-                    'uri' => $uri,
-                ]
-            ])
-        );
+        return QueryResponse::success([
+            'title' => $title,
+            'abstract' => $abstract,
+            'datePublished' => $datePublished,
+            'authorName' => $authorName,
+            'uri' => $uri,
+        ]);
     }
 
     public function processRequest(ActionRequest $request): ResponseInterface
     {
-        return match ($request->getControllerActionName()) {
-            'getPostDetails' => $this->getPostDetails($request),
-            default => throw new NoSuchActionException(sprintf('An action "%s" does not exist in controller "%s".', $request->getControllerActionName(), self::class), 1746104348)
-        };
+        try {
+            return match ($request->getControllerActionName()) {
+                'getPostDetails' => $this->getPostDetails($request)->toHttpResponse(),
+                default => throw new NoSuchActionException(sprintf('An action "%s" does not exist in controller "%s".', $request->getControllerActionName(), self::class), 1746104348)
+            };
+        } catch (\Exception $e) {
+            return QueryResponse::serverError($e)->toHttpResponse();
+        }
     }
 }
