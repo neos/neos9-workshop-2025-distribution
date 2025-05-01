@@ -1,0 +1,6 @@
+Neos:
+  Flow:
+    mvc:
+      routes:
+        'Neos.Demo.BlogApi':
+          position: 'before Neos.Neos'

@@ -1,0 +1,8 @@
+-
+  name: 'GetPostDetails Query'
+  uriPattern: 'get-blog-details'
+  methods: ['GET']
+  defaults:
+    '@package': 'Neos.Demo.BlogApi'
+    '@controller': 'Api'
+    '@action': 'getPostDetails'

@@ -52,13 +52,13 @@ Feature: 01-GetPostDetails
 
   Scenario: GetPostDetails for homepage
     When I issue the following query to "http://127.0.0.1:8081/get-blog-details":
-      | Key  | Value                                                                                                                          |
-      | node | {"contentRepositoryId":"default","workspaceName":"live","dimensionSpacePoint":{"language":"en_US"},"aggregateId":"homepage"}   |
+      | Key  | Value                                                                                                                                            |
+      | node | "{\"contentRepositoryId\":\"default\",\"workspaceName\":\"live\",\"dimensionSpacePoint\":{\"language\":\"en_US\"},\"aggregateId\":\"homepage\"}" |
     Then I expect the following query response:
       """json
       {
           "success": {
-              "uri": "node://homepage"
+              "node": "homepage"
           }
       }
       """

@@ -1,0 +1,14 @@
+
+privilegeTargets:
+
+  'Neos\Flow\Security\Authorization\Privilege\Method\MethodPrivilege':
+
+    'Neos.Demo.BlogApi:ApiAccess':
+      matcher: 'method(Neos\Demo\BlogApi\ApiController->processRequest())'
+
+roles:
+
+  'Neos.Flow:EveryBody':
+    privileges:
+      - privilegeTarget: 'Neos.Demo.BlogApi:ApiAccess'
+        permission: GRANT
