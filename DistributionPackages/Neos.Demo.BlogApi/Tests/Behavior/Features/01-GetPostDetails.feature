@@ -44,15 +44,15 @@ Feature: 01-GetPostDetails
 
     And the command SetNodeProperties is executed with payload:
       | Key                       | Value                      |
-      | nodeAggregateId           | "post-a"                   |
+      | nodeAggregateId           | "blog"                   |
       | originDimensionSpacePoint | {"language": "de"}         |
-      | propertyValues            | {"title": "features (de)"} |
+      | propertyValues            | {"title": "Mein Blog"} |
 
     And the command SetNodeProperties is executed with payload:
-      | Key                       | Value               |
-      | nodeAggregateId           | "post-a"            |
-      | originDimensionSpacePoint | {"language": "de"}  |
-      | propertyValues            | {"title": "a (de)"} |
+      | Key                       | Value                        |
+      | nodeAggregateId           | "post-a"                     |
+      | originDimensionSpacePoint | {"language": "de"}           |
+      | propertyValues            | {"title": "deutscher titel"} |
 
   Scenario: Constraint GetPostDetails for non existing node
     When I issue the following query to "http://127.0.0.1:8081/get-blog-details":
@@ -80,7 +80,7 @@ Feature: 01-GetPostDetails
       }
       """
 
-  Scenario: GetPostDetails for post
+  Scenario: GetPostDetails for post in english
     When I issue the following query to "http://127.0.0.1:8081/get-blog-details":
       | Key  | Value                                                                                                                                          |
       | node | "{\"contentRepositoryId\":\"default\",\"workspaceName\":\"live\",\"dimensionSpacePoint\":{\"language\":\"en_US\"},\"aggregateId\":\"post-a\"}" |
@@ -93,6 +93,23 @@ Feature: 01-GetPostDetails
               "authorName": "Marc Henry",
               "datePublished": "2025-04-03T00:00:00+00:00",
               "uri": "http://127.0.0.1:8081/en/blog/my-post.html"
+          }
+      }
+      """
+
+  Scenario: GetPostDetails for post in german
+    When I issue the following query to "http://127.0.0.1:8081/get-blog-details":
+      | Key  | Value                                                                                                                                       |
+      | node | "{\"contentRepositoryId\":\"default\",\"workspaceName\":\"live\",\"dimensionSpacePoint\":{\"language\":\"de\"},\"aggregateId\":\"post-a\"}" |
+    Then I expect the following query response:
+      """json
+      {
+          "success": {
+              "title": "deutscher titel",
+              "abstract": "This is my blog post",
+              "authorName": "Marc Henry",
+              "datePublished": "2025-04-03T00:00:00+00:00",
+              "uri": "http://127.0.0.1:8081/de/blog/my-post.html"
           }
       }
       """

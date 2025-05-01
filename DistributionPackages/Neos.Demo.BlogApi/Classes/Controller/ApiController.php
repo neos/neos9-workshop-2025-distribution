@@ -80,11 +80,48 @@ final class ApiController implements ControllerInterface
         ]);
     }
 
+    private function getPostListing(ActionRequest $request): QueryResponse
+    {
+        $httpRequest = $request->getHttpRequest();
+        $blogId = $httpRequest->getQueryParams()['blogId'] ?? null;
+        $language = $httpRequest->getQueryParams()['language'] ?? null;
+        if (!is_string($blogId) && !is_string($language)) {
+            return QueryResponse::clientError('No blogId or language specified');
+        }
+
+        $contentRepositoryId = SiteDetectionResult::fromRequest($httpRequest)->contentRepositoryId;
+
+        $contentRepository = $this->contentRepositoryRegistry->get($contentRepositoryId);
+
+        $subgraph = $contentRepository->getContentSubgraph(WorkspaceName::forLive(), DimensionSpacePoint::fromArray([
+            'language' => $language
+        ]));
+
+        $blogNode = $subgraph->findNodeById(NodeAggregateId::fromString($blogId));
+        if ($blogNode === null) {
+            return QueryResponse::clientError(sprintf('Blog %s does not exist in subgraph %s %s.' , $blogId, $subgraph->getWorkspaceName()->value, $subgraph->getDimensionSpacePoint()->toJson()));
+        }
+
+        $postings = [];
+        foreach ($subgraph->findChildNodes($blogNode->aggregateId, FindChildNodesFilter::create(nodeTypes: 'Neos.Demo:Document.BlogPosting')) as $blogPositingNode) {
+            $postings[] = [
+                'id' => $blogPositingNode->aggregateId->value,
+                'title' => $blogPositingNode->getProperty('title'),
+            ];
+        }
+
+        return QueryResponse::success([
+            'title' => $blogNode->getProperty('title'),
+            'postings' => $postings,
+        ]);
+    }
+
     public function processRequest(ActionRequest $request): ResponseInterface
     {
         try {
             return match ($request->getControllerActionName()) {
                 'getPostDetails' => $this->getPostDetails($request)->toHttpResponse(),
+                'getPostListing' => $this->getPostListing($request)->toHttpResponse(),
                 default => throw new NoSuchActionException(sprintf('An action "%s" does not exist in controller "%s".', $request->getControllerActionName(), self::class), 1746104348)
             };
         } catch (WorkspaceDoesNotExist $workspaceDoesNotExist) {
