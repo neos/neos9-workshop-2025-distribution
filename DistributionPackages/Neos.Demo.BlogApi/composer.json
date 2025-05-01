@@ -1,0 +1,25 @@
+{
+    "description": "",
+    "type": "neos-package",
+    "name": "neos/demo-blogapi",
+    "require": {
+        "neos/neos": "~9.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Neos\\Demo\\BlogApi\\": "Classes/"
+        }
+    },
+    "scripts": {
+        "test:behat-cli": "../../bin/behat -f progress --strict --no-interaction",
+        "test:behavioral": [
+            "FLOW_CONTEXT=Testing/Behat ../../flow doctrine:migrate",
+            "@test:behat-cli -c Tests/Behavior/behat.yml.dist -vvv"
+        ]
+    },
+    "extra": {
+        "neos": {
+            "package-key": "Neos.Demo.BlogApi"
+        }
+    }
+}
