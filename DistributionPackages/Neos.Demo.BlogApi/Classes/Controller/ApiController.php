@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neos\Demo\BlogApi\Controller;
 
+use GuzzleHttp\Psr7\Uri;
 use Neos\ContentRepository\Core\DimensionSpace\DimensionSpacePoint;
 use Neos\ContentRepository\Core\Feature\Security\Exception\AccessDenied;
 use Neos\ContentRepository\Core\Projection\ContentGraph\Filter\FindChildNodesFilter;
@@ -16,6 +17,8 @@ use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\ActionRequest;
 use Neos\Flow\Mvc\Controller\ControllerInterface;
 use Neos\Flow\Mvc\Exception\NoSuchActionException;
+use Neos\Flow\Mvc\Routing\UriBuilder;
+use Neos\Neos\FrontendRouting\NodeUriBuilder;
 use Neos\Neos\FrontendRouting\NodeUriBuilderFactory;
 use Neos\Neos\FrontendRouting\Options;
 use Neos\Neos\FrontendRouting\SiteDetection\SiteDetectionResult;
@@ -26,8 +29,9 @@ final class ApiController implements ControllerInterface
     #[Flow\Inject]
     protected ContentRepositoryRegistry $contentRepositoryRegistry;
 
-    #[Flow\Inject]
-    protected NodeUriBuilderFactory $nodeUriBuilderFactory;
+    private NodeUriBuilder $nodeUriBuilder;
+
+    private UriBuilder $uriBuilder;
 
     private function getPostDetails(ActionRequest $request): QueryResponse
     {
@@ -57,8 +61,7 @@ final class ApiController implements ControllerInterface
             return QueryResponse::clientError(sprintf('Node %s is not a blog posting.' , $nodeAddress->toJson()));
         }
 
-        $nodeUriBuilder = $this->nodeUriBuilderFactory->forActionRequest($request);
-        $uri = $nodeUriBuilder->uriFor(NodeAddress::fromNode($node), Options::createForceAbsolute());
+        $uri = $this->nodeUriBuilder->uriFor(NodeAddress::fromNode($node), Options::createForceAbsolute());
 
         $title = $node->getProperty('title');
         $abstract = $node->getProperty('abstract');
@@ -102,22 +105,31 @@ final class ApiController implements ControllerInterface
             return QueryResponse::clientError(sprintf('Blog %s does not exist in subgraph %s %s.' , $blogId, $subgraph->getWorkspaceName()->value, $subgraph->getDimensionSpacePoint()->toJson()));
         }
 
+        $baseUri = new Uri($this->uriBuilder->uriFor(actionName: 'getPostDetails', controllerName: 'Api', packageKey: 'Neos.Demo.BlogApi'));
+
         $postings = [];
         foreach ($subgraph->findChildNodes($blogNode->aggregateId, FindChildNodesFilter::create(nodeTypes: 'Neos.Demo:Document.BlogPosting')) as $blogPositingNode) {
             $postings[] = [
                 'id' => $blogPositingNode->aggregateId->value,
                 'title' => $blogPositingNode->getProperty('title'),
+                'api' => $baseUri->withQuery(http_build_query(['node' => NodeAddress::fromNode($blogPositingNode)->toJson()]))
             ];
         }
+
+        $blogUri = $this->nodeUriBuilder->uriFor(NodeAddress::fromNode($blogNode), Options::createForceAbsolute());
 
         return QueryResponse::success([
             'title' => $blogNode->getProperty('title'),
             'postings' => $postings,
+            'blogUri' => $blogUri,
         ]);
     }
 
     public function processRequest(ActionRequest $request): ResponseInterface
     {
+        $this->uriBuilder = new UriBuilder();
+        $this->uriBuilder->setRequest($request);
+        $this->nodeUriBuilder = (new NodeUriBuilderFactory())->forActionRequest($request);
         try {
             return match ($request->getControllerActionName()) {
                 'getPostDetails' => $this->getPostDetails($request)->toHttpResponse(),

@@ -64,14 +64,17 @@ Feature: 02-GetPostListing
       {
           "success": {
               "title": "My blog",
+              "blogUri": "http://127.0.0.1:8081/en/blog.html",
               "postings": [
                   {
                      "id": "post-a",
-                     "title": "a"
+                     "title": "a",
+                     "api": "/get-blog-details?node=%7B%22contentRepositoryId%22%3A%22default%22%2C%22workspaceName%22%3A%22live%22%2C%22dimensionSpacePoint%22%3A%7B%22language%22%3A%22en_US%22%7D%2C%22aggregateId%22%3A%22post-a%22%7D"
                   },
                   {
                      "id": "post-b",
-                     "title": "b"
+                     "title": "b",
+                     "api": "/get-blog-details?node=%7B%22contentRepositoryId%22%3A%22default%22%2C%22workspaceName%22%3A%22live%22%2C%22dimensionSpacePoint%22%3A%7B%22language%22%3A%22en_US%22%7D%2C%22aggregateId%22%3A%22post-b%22%7D"
                   }
               ]
           }
@@ -88,10 +91,12 @@ Feature: 02-GetPostListing
       {
           "success": {
               "title": "Mein Blog",
+              "blogUri": "http://127.0.0.1:8081/de/blog.html",
               "postings": [
                   {
                      "id": "post-a",
-                     "title": "a (de)"
+                     "title": "a (de)",
+                     "api": "/get-blog-details?node=%7B%22contentRepositoryId%22%3A%22default%22%2C%22workspaceName%22%3A%22live%22%2C%22dimensionSpacePoint%22%3A%7B%22language%22%3A%22de%22%7D%2C%22aggregateId%22%3A%22post-a%22%7D"
                   }
               ]
           }
