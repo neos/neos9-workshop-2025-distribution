@@ -40,7 +40,7 @@ final class SimpleApiController extends ActionController
         $nodeAddress = NodeAddress::fromNode($node);
 
         if ($node->nodeTypeName->value !== 'Neos.Demo:Document.BlogPosting') {
-            return QueryResponse::clientError(sprintf('Node %s is not a blog posting.' , $nodeAddress->toJson()))->toHttpResponse();
+            return QueryResponseHelper::clientError(sprintf('Node %s is not a blog posting.' , $nodeAddress->toJson()));
         }
 
         $uri = $this->nodeUriBuilder->uriFor($nodeAddress, Options::createForceAbsolute());
@@ -56,13 +56,13 @@ final class SimpleApiController extends ActionController
         }
         $authorName = $node->getProperty('authorName');
 
-        return QueryResponse::success([
+        return QueryResponseHelper::success([
             'title' => $title,
             'abstract' => $abstract,
             'datePublished' => $datePublished,
             'authorName' => $authorName,
             'uri' => $uri,
-        ])->toHttpResponse();
+        ]);
     }
 
     public function getPostListingAction(NodeAggregateId $blogId, string $language): ResponseInterface
@@ -78,7 +78,7 @@ final class SimpleApiController extends ActionController
 
         $blogNode = $subgraph->findNodeById($blogId);
         if ($blogNode === null) {
-            return QueryResponse::clientError(sprintf('Blog %s does not exist in subgraph %s %s.' , $blogId->value, $subgraph->getWorkspaceName()->value, $subgraph->getDimensionSpacePoint()->toJson()))->toHttpResponse();
+            return QueryResponseHelper::clientError(sprintf('Blog %s does not exist in subgraph %s %s.' , $blogId->value, $subgraph->getWorkspaceName()->value, $subgraph->getDimensionSpacePoint()->toJson()));
         }
 
         $baseUri = new Uri($this->uriBuilder->uriFor(actionName: 'getPostDetails', controllerName: 'SimpleApi', packageKey: 'Neos.Demo.BlogApi'));
@@ -94,10 +94,10 @@ final class SimpleApiController extends ActionController
 
         $blogUri = $this->nodeUriBuilder->uriFor(NodeAddress::fromNode($blogNode), Options::createForceAbsolute());
 
-        return QueryResponse::success([
+        return QueryResponseHelper::success([
             'title' => $blogNode->getProperty('title'),
             'postings' => $postings,
             'blogUri' => $blogUri,
-        ])->toHttpResponse();
+        ]);
     }
 }

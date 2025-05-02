@@ -36,32 +36,33 @@ final class ApiController implements ControllerInterface
 
     private UriBuilder $uriBuilder;
 
-    private function getPostDetails(ActionRequest $request): QueryResponse
+    private function getPostDetails(ActionRequest $request): ResponseInterface
     {
         $nodeAddressSerialized = $request->getHttpRequest()->getQueryParams()['node'] ?? null;
         if (!is_string($nodeAddressSerialized)) {
-            return QueryResponse::clientError('No node address specified');
+            return QueryResponseHelper::clientError('No node address specified');
         }
 
         try {
             $nodeAddress = NodeAddress::fromJsonString($nodeAddressSerialized);
         } catch (\InvalidArgumentException $e) {
-            return QueryResponse::clientError(sprintf('Not a valid node address: %s' , $e->getMessage()));
+            return QueryResponseHelper::clientError(sprintf('Not a valid node address: %s' , $e->getMessage()));
         }
 
         $contentRepository = $this->contentRepositoryRegistry->get($nodeAddress->contentRepositoryId);
 
+        // can throw WorkspaceDoesNotExist or AccessDenied exceptions!
         $subgraph = $contentRepository->getContentSubgraph($nodeAddress->workspaceName, $nodeAddress->dimensionSpacePoint);
         // manually
         // $subgraph = $contentGraph->getSubgraph($nodeAddress->dimensionSpacePoint, NeosVisibilityConstraints::excludeRemoved()->merge(NeosVisibilityConstraints::excludeDisabled()));
 
         $node = $subgraph->findNodeById($nodeAddress->aggregateId);
         if ($node === null) {
-            return QueryResponse::clientError(sprintf('Node address %s does not exist in subgraph.' , $nodeAddress->toJson()));
+            return QueryResponseHelper::clientError(sprintf('Node address %s does not exist in subgraph.' , $nodeAddress->toJson()));
         }
 
         if ($node->nodeTypeName->value !== 'Neos.Demo:Document.BlogPosting') {
-            return QueryResponse::clientError(sprintf('Node %s is not a blog posting.' , $nodeAddress->toJson()));
+            return QueryResponseHelper::clientError(sprintf('Node %s is not a blog posting.' , $nodeAddress->toJson()));
         }
 
         // instance of check via node type manager
@@ -79,7 +80,7 @@ final class ApiController implements ControllerInterface
         }
         $authorName = $node->getProperty('authorName');
 
-        return QueryResponse::success([
+        return QueryResponseHelper::success([
             'title' => $title,
             'abstract' => $abstract,
             'datePublished' => $datePublished,
@@ -88,13 +89,13 @@ final class ApiController implements ControllerInterface
         ]);
     }
 
-    private function getPostListing(ActionRequest $request): QueryResponse
+    private function getPostListing(ActionRequest $request): ResponseInterface
     {
         $httpRequest = $request->getHttpRequest();
         $blogId = $httpRequest->getQueryParams()['blogId'] ?? null;
         $language = $httpRequest->getQueryParams()['language'] ?? null;
         if (!is_string($blogId) && !is_string($language)) {
-            return QueryResponse::clientError('No blogId or language specified');
+            return QueryResponseHelper::clientError('No blogId or language specified');
         }
 
         $contentRepositoryId = SiteDetectionResult::fromRequest($httpRequest)->contentRepositoryId;
@@ -107,7 +108,7 @@ final class ApiController implements ControllerInterface
 
         $blogNode = $subgraph->findNodeById(NodeAggregateId::fromString($blogId));
         if ($blogNode === null) {
-            return QueryResponse::clientError(sprintf('Blog %s does not exist in subgraph %s %s.' , $blogId, $subgraph->getWorkspaceName()->value, $subgraph->getDimensionSpacePoint()->toJson()));
+            return QueryResponseHelper::clientError(sprintf('Blog %s does not exist in subgraph %s %s.' , $blogId, $subgraph->getWorkspaceName()->value, $subgraph->getDimensionSpacePoint()->toJson()));
         }
 
         $baseUri = new Uri($this->uriBuilder->uriFor(actionName: 'getPostDetails', controllerName: 'Api', packageKey: 'Neos.Demo.BlogApi'));
@@ -123,7 +124,7 @@ final class ApiController implements ControllerInterface
 
         $blogUri = $this->nodeUriBuilder->uriFor(NodeAddress::fromNode($blogNode), Options::createForceAbsolute());
 
-        return QueryResponse::success([
+        return QueryResponseHelper::success([
             'title' => $blogNode->getProperty('title'),
             'postings' => $postings,
             'blogUri' => $blogUri,
@@ -135,20 +136,10 @@ final class ApiController implements ControllerInterface
         $this->uriBuilder = new UriBuilder();
         $this->uriBuilder->setRequest($request);
         $this->nodeUriBuilder = $this->nodeUriBuilderFactory->forActionRequest($request);
-        try {
-            return match ($request->getControllerActionName()) {
-                'getPostDetails' => $this->getPostDetails($request)->toHttpResponse(),
-                'getPostListing' => $this->getPostListing($request)->toHttpResponse(),
-                default => throw new NoSuchActionException(sprintf('An action "%s" does not exist in controller "%s".', $request->getControllerActionName(), self::class), 1746104348)
-            };
-        } catch (WorkspaceDoesNotExist $workspaceDoesNotExist) {
-            return QueryResponse::clientError($workspaceDoesNotExist)->toHttpResponse();
-        } catch (AccessDenied $accessDenied) {
-            return QueryResponse::clientError($accessDenied)->toHttpResponse();
-        } catch (\InvalidArgumentException $e) {
-            return QueryResponse::clientError($e)->toHttpResponse();
-        } catch (\Exception $e) {
-            return QueryResponse::serverError($e)->toHttpResponse();
-        }
+        return match ($request->getControllerActionName()) {
+            'getPostDetails' => $this->getPostDetails($request),
+            'getPostListing' => $this->getPostListing($request),
+            default => throw new NoSuchActionException(sprintf('An action "%s" does not exist in controller "%s".', $request->getControllerActionName(), self::class), 1746104348)
+        };
     }
 }
