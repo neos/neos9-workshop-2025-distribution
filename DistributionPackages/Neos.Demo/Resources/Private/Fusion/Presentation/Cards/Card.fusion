@@ -35,7 +35,7 @@ prototype(Neos.Demo:Presentation.Cards.Card) < prototype(Neos.Fusion:Component) 
 
             <div class="mt-5 ml-8 italic text-sm">
                 <time datetime={Date.format(props.date, 'Y-m-d')} @if={props.date}>
-                    {Date.formatCldr(props.date, 'd. MMMM y')}
+                    {Date.format(props.date, 'd.m.Y')}
                 </time>
             </div>
             <div class="p-8 pt-3">
