@@ -1,0 +1,12 @@
+##
+# The teaser collection that allows only specific contents
+#
+'Neos.Demo:Collection.Content.Teaser':
+  superTypes:
+    Neos.Neos:ContentCollection: true
+  ui:
+    label: i18n
+  constraints:
+    nodeTypes:
+      '*': false
+      'Neos.Demo:Constraint.Content.Teaser': true

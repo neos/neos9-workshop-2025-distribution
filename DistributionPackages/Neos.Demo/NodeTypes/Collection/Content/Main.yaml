@@ -1,0 +1,12 @@
+##
+# The default content collection
+#
+'Neos.Demo:Collection.Content.Main':
+  superTypes:
+    Neos.Neos:ContentCollection: true
+  ui:
+    label: i18n
+  constraints:
+    nodeTypes:
+      '*': false
+      'Neos.Demo:Constraint.Content.Main': true
