@@ -52,6 +52,9 @@ final class QueryResponseHelper
         );
     }
 
+    /**
+     * @param array<mixed>|\JsonSerializable $payload
+     */
     private static function toHttpResponse(int $statusCode, string $discriminator, array|\JsonSerializable $payload): ResponseInterface
     {
         return new Response(

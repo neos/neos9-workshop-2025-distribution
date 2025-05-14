@@ -11,6 +11,7 @@
         }
     },
     "scripts": {
+        "lint:phpstan": "../../bin/phpstan analyse Classes --level 8",
         "test:behat-cli": "../../bin/behat -f progress --strict --no-interaction",
         "test:behavioral": [
             "FLOW_CONTEXT=Testing/Behat ../../flow doctrine:migrate",

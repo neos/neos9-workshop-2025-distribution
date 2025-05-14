@@ -8,6 +8,7 @@ use League\Csv\Reader;
 
 class PublicationEventProvider
 {
+    /** @phpstan-ignore constant.notFound */
     const FIXTURE_PATH = FLOW_PATH_ROOT . 'DistributionPackages/Neos.Demo.BlogImporter/Tests/Behavior/Fixtures/';
 
     /**
@@ -24,7 +25,7 @@ class PublicationEventProvider
                 $record['language'],
                 $record['headline'],
                 $record['abstract'],
-                \DateTimeImmutable::createFromFormat('Y-m-d', $record['datePublished']),
+                \DateTimeImmutable::createFromFormat('Y-m-d', $record['datePublished']) ?: throw new \RuntimeException(sprintf('Date %s is not valid', $record['datePublished']), 1747205914),
                 $record['author'],
             );
         }
