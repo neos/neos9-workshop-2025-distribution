@@ -15,6 +15,14 @@
         "neos/nodetypes-navigation": "~9.0.0",
         "neos/seo": "~4.1"
     },
+    "scripts": {
+        "lint:phpstan": "../../bin/phpstan analyse Classes --level 7",
+        "test:behat-cli": "../../bin/behat -f progress --strict --no-interaction",
+        "test:behavioral": [
+            "FLOW_CONTEXT=Testing/Behat ../../flow doctrine:migrate",
+            "@test:behat-cli -c Tests/Behavior/behat.yml.dist -vvv"
+        ]
+    },
     "suggest": {
         "sitegeist/monocle": "An living-styleguide for Neos that is based on the actual fusion-code",
         "yoast/yoast-seo-for-neos": "Yoast SEO for Neos CMS"
