@@ -51,6 +51,7 @@ Feature: Consecutive import
     And I expect this node aggregate to be of type "Neos.Demo:Document.BlogPosting"
     And I expect this node aggregate to occupy dimension space points [{"language": "en_US"}]
     And I expect this node aggregate to cover dimension space points [{"language": "en_US"}, {"language": "en_GB"}]
+    And I expect this node aggregate to have the parent node aggregates ["demo-neos-blog"]
 
     Then I expect the node aggregate "demo-neos-20241213" to exist
     And I expect this node aggregate to be of type "Neos.Demo:Document.BlogPosting"
