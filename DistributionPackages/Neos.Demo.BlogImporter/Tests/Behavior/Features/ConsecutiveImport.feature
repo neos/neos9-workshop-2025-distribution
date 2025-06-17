@@ -110,6 +110,8 @@ Feature: Consecutive import
     And I expect this node aggregate to cover dimension space points [{"language": "en_US"}, {"language": "en_GB"}, {"language": "de"}]
     And I expect this node aggregate to have the parent node aggregates ["demo-neos-blog"]
 
+    Then I expect the node aggregate "demo-neos-20241213" to not exist
+
     When I am in workspace "live" and dimension space point {"language": "en_US"}
     Then I expect node aggregate identifier "demo-neos-20241028" to lead to node cs-identifier;demo-neos-20241028;{"language": "en_US"}
     And I expect this node to have the following properties:
@@ -133,6 +135,8 @@ Feature: Consecutive import
       | Name  | Node                                                |
       | about | cs-identifier;demo-neos-neos-9;{"language":"en_US"} |
 
+    Then I expect node aggregate identifier "demo-neos-20241213" to lead to no node
+
     When I am in workspace "live" and dimension space point {"language": "de"}
     Then I expect node aggregate identifier "demo-neos-20241028" to lead to node cs-identifier;demo-neos-20241028;{"language": "de"}
     And I expect this node to have the following properties:
@@ -155,3 +159,5 @@ Feature: Consecutive import
     And I expect this node to have the following references:
       | Name  | Node                                             |
       | about | cs-identifier;demo-neos-neos-9;{"language":"de"} |
+
+    Then I expect node aggregate identifier "demo-neos-20241213" to lead to no node
