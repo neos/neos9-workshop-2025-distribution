@@ -56,10 +56,10 @@ Feature: Consecutive import
     And I expect this node aggregate to be of type "Neos.Demo:Document.BlogPosting"
     And I expect this node aggregate to occupy dimension space points [{"language": "en_US"}, {"language": "de"}]
     And I expect this node aggregate to cover dimension space points [{"language": "en_US"}, {"language": "en_GB"}, {"language": "de"}]
+    And I expect this node aggregate to have the parent node aggregates ["demo-neos-blog"]
 
     When I am in workspace "live" and dimension space point {"language": "en_US"}
     Then I expect node aggregate identifier "demo-neos-20241028" to lead to node cs-identifier;demo-neos-20241028;{"language": "en_US"}
-    And I expect this node to be a child of node cs-identifier;demo-neos-blog;{"language": "en_US"}
     And I expect this node to have the following properties:
       | Key           | Value                                                               |
       | title         | "Neos Barcamp 2024: A Recap"                                        |
@@ -71,7 +71,6 @@ Feature: Consecutive import
       | about | cs-identifier;demo-neos-barcamp;{"language":"en_US"} |
 
     And I expect node aggregate identifier "demo-neos-20241213" to lead to node cs-identifier;demo-neos-20241213;{"language": "en_US"}
-    And I expect this node to be a child of node cs-identifier;demo-neos-blog;{"language": "en_US"}
     And I expect this node to have the following properties:
       | Key           | Value                                                                                                                                                    |
       | title         | "Neos 9.0 Pre-release update"                                                                                                                            |
@@ -85,7 +84,6 @@ Feature: Consecutive import
     When I am in workspace "live" and dimension space point {"language": "de"}
     Then I expect node aggregate identifier "demo-neos-20241028" to lead to no node
     And I expect node aggregate identifier "demo-neos-20241213" to lead to node cs-identifier;demo-neos-20241213;{"language": "de"}
-    And I expect this node to be a child of node cs-identifier;demo-neos-blog;{"language": "de"}
     And I expect this node to have the following properties:
       | Key           | Value                                                                                                                                                    |
       | title         | "Neos 9.0 Pre-Release-Update"                                                                                                                            |
@@ -109,10 +107,10 @@ Feature: Consecutive import
     And I expect this node aggregate to be of type "Neos.Demo:Document.BlogPosting"
     And I expect this node aggregate to occupy dimension space points [{"language": "en_US"}, {"language": "de"}]
     And I expect this node aggregate to cover dimension space points [{"language": "en_US"}, {"language": "en_GB"}, {"language": "de"}]
+    And I expect this node aggregate to have the parent node aggregates ["demo-neos-blog"]
 
     When I am in workspace "live" and dimension space point {"language": "en_US"}
     Then I expect node aggregate identifier "demo-neos-20241028" to lead to node cs-identifier;demo-neos-20241028;{"language": "en_US"}
-    And I expect this node to be a child of node cs-identifier;demo-neos-blog;{"language": "en_US"}
     And I expect this node to have the following properties:
       | Key           | Value                                                                                                                                                                                                 |
       | title         | "Neos Barcamp 2024: A Recap"                                                                                                                                                                          |
@@ -124,7 +122,6 @@ Feature: Consecutive import
       | about | cs-identifier;demo-neos-neos-9;{"language":"en_US"} |
 
     And I expect node aggregate identifier "demo-neos-20250403" to lead to node cs-identifier;demo-neos-20250403;{"language": "en_US"}
-    And I expect this node to be a child of node cs-identifier;demo-neos-blog;{"language": "en_US"}
     And I expect this node to have the following properties:
       | Key           | Value                                                                                    |
       | title         | "Neos and Flow 9.0 Release"                                                              |
@@ -137,7 +134,6 @@ Feature: Consecutive import
 
     When I am in workspace "live" and dimension space point {"language": "de"}
     Then I expect node aggregate identifier "demo-neos-20241028" to lead to node cs-identifier;demo-neos-20241028;{"language": "de"}
-    And I expect this node to be a child of node cs-identifier;demo-neos-blog;{"language": "de"}
     And I expect this node to have the following properties:
       | Key           | Value                                                                                                                                                                                          |
       | title         | "Neos Barcamp 2024: Eine Zusammenfassung"                                                                                                                                                      |
@@ -149,7 +145,6 @@ Feature: Consecutive import
       | about | cs-identifier;demo-neos-barcamp;{"language":"de"} |
 
     And I expect node aggregate identifier "demo-neos-20250403" to lead to node cs-identifier;demo-neos-20250403;{"language": "de"}
-    And I expect this node to be a child of node cs-identifier;demo-neos-blog;{"language": "de"}
     And I expect this node to have the following properties:
       | Key           | Value                                                                                 |
       | title         | "Neos und Flow 9.0-Release"                                                           |
