@@ -13,7 +13,7 @@ trait StandaloneBlogImporterTrait
     /**
      * @When /I import the contents into blog "([^"]*)"/
      */
-    public function iImportFileIntoBlog(string $blogId, TableNode $contents): void
+    public function iImportContentsIntoBlog(string $blogId, TableNode $contents): void
     {
         $subject = new Importer(
             importEventProvider: new FakePublicationEventProvider(
