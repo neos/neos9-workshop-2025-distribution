@@ -28,7 +28,7 @@ Feature: Consecutive import
 
     And the command CreateNodeVariant is executed with payload:
       | Key             | Value                |
-      | nodeAggregateId | "demo-neos-blog"               |
+      | nodeAggregateId | "demo-neos-blog"     |
       | sourceOrigin    | {"language":"en_US"} |
       | targetOrigin    | {"language":"de"}    |
 
@@ -64,7 +64,7 @@ Feature: Consecutive import
       | Key           | Value                                                               |
       | title         | "Neos Barcamp 2024: A Recap"                                        |
       | abstract      | "On 25 October 2024, the first Neos Barcamp took place in Dresden." |
-      | datePublished | Date:2024-10-28                                                     |
+      | datePublished | Date:2024-10-28T12:00:00+00:00                                      |
       | authorName    | "Marika Hauke"                                                      |
     And I expect this node to have the following references:
       | Name  | Node                                                 |
@@ -75,7 +75,7 @@ Feature: Consecutive import
       | Key           | Value                                                                                                                                                    |
       | title         | "Neos 9.0 Pre-release update"                                                                                                                            |
       | abstract      | "We last talked about our plans for Neos 9.0 back in May shortly after the conference and we expected at that point to provide the 9.0 release in 2024." |
-      | datePublished | Date:2024-12-13                                                                                                                                          |
+      | datePublished | Date:2024-12-13T12:00:00+00:00                                                                                                                           |
       | authorName    | "Christian Müller"                                                                                                                                       |
     And I expect this node to have the following references:
       | Name  | Node                                                |
@@ -88,7 +88,7 @@ Feature: Consecutive import
       | Key           | Value                                                                                                                                                    |
       | title         | "Neos 9.0 Pre-Release-Update"                                                                                                                            |
       | abstract      | "Wir erzählten von unseren Plänen für Neos 9.0 zuletzt im Mai kurz nach der Konferenz und erwarteten zu dieser Zeit, Neos 9 in 2024 zu veröffentlichen." |
-      | datePublished | Date:2024-12-13                                                                                                                                          |
+      | datePublished | Date:2024-12-13T12:00:00+00:00                                                                                                                           |
       | authorName    | "Christian Müller"                                                                                                                                       |
     And I expect this node to have the following references:
       | Name  | Node                                             |
@@ -115,7 +115,7 @@ Feature: Consecutive import
       | Key           | Value                                                                                                                                                                                                 |
       | title         | "Neos Barcamp 2024: A Recap"                                                                                                                                                                          |
       | abstract      | "On 25 October 2024, the first Neos Barcamp took place in Dresden - a day that brought the Neos community together and provided space for numerous exciting presentations and intensive discussions." |
-      | datePublished | Date:2024-10-28                                                                                                                                                                                       |
+      | datePublished | Date:2024-10-28T12:00:00+00:00                                                                                                                                                                        |
       | authorName    | "Marika Hauke"                                                                                                                                                                                        |
     And I expect this node to have the following references:
       | Name  | Node                                                |
@@ -126,7 +126,7 @@ Feature: Consecutive import
       | Key           | Value                                                                                    |
       | title         | "Neos and Flow 9.0 Release"                                                              |
       | abstract      | "Good things come to those who wait - and the wait for Neos and Flow 9 is finally over!" |
-      | datePublished | Date:2025-04-03                                                                          |
+      | datePublished | Date:2025-04-03T12:00:00+00:00                                                           |
       | authorName    | "Tobias Gruber, Robert Lemke and the Neos Team"                                          |
     And I expect this node to have the following references:
       | Name  | Node                                                |
@@ -138,7 +138,7 @@ Feature: Consecutive import
       | Key           | Value                                                                                                                                                                                          |
       | title         | "Neos Barcamp 2024: Eine Zusammenfassung"                                                                                                                                                      |
       | abstract      | "Am 25. Oktober 2024 fand das erste Neos Barcamp in Dresden statt - ein Tag, der die Neos-Community zusammen brachte und Raum für zahlreiche Präsentationen und intensive Diskussionen schuf." |
-      | datePublished | Date:2024-10-28                                                                                                                                                                                |
+      | datePublished | Date:2024-10-28T12:00:00+00:00                                                                                                                                                                 |
       | authorName    | "Marika Hauke"                                                                                                                                                                                 |
     And I expect this node to have the following references:
       | Name  | Node                                              |
@@ -149,7 +149,7 @@ Feature: Consecutive import
       | Key           | Value                                                                                 |
       | title         | "Neos und Flow 9.0-Release"                                                           |
       | abstract      | "Was lange währt wird endlich gut - and das Warten auf Neos und Flow 9 hat ein Ende!" |
-      | datePublished | Date:2025-04-03                                                                       |
+      | datePublished | Date:2025-04-03T12:00:00+00:00                                                        |
       | authorName    | "Tobias Gruber, Robert Lemke und das Neos-Team"                                       |
     And I expect this node to have the following references:
       | Name  | Node                                             |

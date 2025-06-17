@@ -27,7 +27,7 @@ final class FsCsvPublicationEventProvider implements PublicationEventProviderInt
                 $record['language'] ?: null,
                 $record['headline'],
                 $record['abstract'],
-                \DateTimeImmutable::createFromFormat('Y-m-d', $record['datePublished']) ?: throw new \RuntimeException(sprintf('Date %s is not valid', $record['datePublished']), 1747205914),
+                \DateTimeImmutable::createFromFormat(\DateTimeImmutable::W3C, $record['datePublished']) ?: throw new \RuntimeException(sprintf('Date %s is not valid', $record['datePublished']), 1747205914),
                 $record['author'],
             );
         }
