@@ -20,7 +20,7 @@ trait StandaloneBlogImporterTrait
                 array_map(
                     fn ($record) => new BlogPostingWasPublished(
                         $record['id'],
-                        $record['language'],
+                        $record['language'] ?: null,
                         json_decode($record['headline']),
                         json_decode($record['abstract']),
                         \DateTimeImmutable::createFromFormat('Y-m-d', $record['datePublished']) ?: throw new \RuntimeException(sprintf('Date %s is not valid', $record['datePublished']), 1747205914),

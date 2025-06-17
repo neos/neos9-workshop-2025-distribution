@@ -24,7 +24,7 @@ final class FsCsvPublicationEventProvider implements PublicationEventProviderInt
         foreach ($reader->getRecords() as $record) {
             yield new BlogPostingWasPublished(
                 $record['id'],
-                $record['language'],
+                $record['language'] ?: null,
                 $record['headline'],
                 $record['abstract'],
                 \DateTimeImmutable::createFromFormat('Y-m-d', $record['datePublished']) ?: throw new \RuntimeException(sprintf('Date %s is not valid', $record['datePublished']), 1747205914),
