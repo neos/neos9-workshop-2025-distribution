@@ -6,17 +6,19 @@ namespace Neos\Demo\BlogImporter;
 
 use League\Csv\Reader;
 
-class PublicationEventProvider
+final class FsCsvPublicationEventProvider implements PublicationEventProviderInterface
 {
-    /** @phpstan-ignore constant.notFound */
-    const FIXTURE_PATH = FLOW_PATH_ROOT . 'DistributionPackages/Neos.Demo.BlogImporter/Tests/Behavior/Fixtures/';
+    public function __construct(
+        private readonly string $filename
+    ) {
+    }
 
     /**
      * @return iterable<BlogPostingWasPublished>
      */
-    public static function readFromFile(string $filename): iterable
+    public function read(): iterable
     {
-        $reader = Reader::createFromPath(self::FIXTURE_PATH . $filename . '.csv');
+        $reader = Reader::createFromPath($this->filename);
         $reader->setHeaderOffset(0);
         $reader->setDelimiter(';');
         foreach ($reader->getRecords() as $record) {

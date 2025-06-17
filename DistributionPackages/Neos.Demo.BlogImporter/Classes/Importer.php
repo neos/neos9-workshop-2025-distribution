@@ -4,13 +4,24 @@ declare(strict_types=1);
 
 namespace Neos\Demo\BlogImporter;
 
+use Neos\ContentRepository\Core\ContentRepository;
 use Neos\ContentRepository\Core\SharedModel\Node\NodeAggregateId;
 
-class Importer
+use Neos\Flow\Annotations as Flow;
+
+#[Flow\Proxy(false)]
+final class Importer
 {
-    public function importFile(string $filename, NodeAggregateId $blogId): void
+    public function __construct(
+        private readonly PublicationEventProviderInterface $importEventProvider,
+        private readonly ContentRepository $contentRepository,
+    ) {
+    }
+
+    public function run(NodeAggregateId $blogId): void
     {
-        foreach (PublicationEventProvider::readFromFile($filename) as $event) {
+        echo $this->contentRepository->id;
+        foreach ($this->importEventProvider->read() as $event) {
             // @todo: implement me
         }
     }
