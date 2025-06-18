@@ -16,6 +16,7 @@ final readonly class BlogPostingWasPublished
         public string $abstract,
         public \DateTimeImmutable $datePublished,
         public string $author,
+        public string $about,
     ) {
     }
 }

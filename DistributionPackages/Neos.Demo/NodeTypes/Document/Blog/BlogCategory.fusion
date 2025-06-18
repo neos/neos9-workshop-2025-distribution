@@ -24,8 +24,9 @@ prototype(Neos.Demo:Document.BlogCategory) < prototype(Neos.Demo:Document.Page) 
 
         cards = Neos.Demo:Presentation.Cards.Container {
             content = Neos.Fusion:Loop {
-                items = ${q(documentNode).backReferenceNodes('categories')}
-                items.@process.sortBy = ${value.sort("datePublished", "DESC")}
+                # TODO(con25) output all blog postings assosiated with this category
+                items = ${[]}
+                # items.@process.sortBy = ${value.sort("datePublished", "DESC")}
 
                 itemName = 'blogPosting'
 
